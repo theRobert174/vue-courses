@@ -1,5 +1,6 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png">
+  <Counter title="Entrada" :start="101"></Counter>
   <Counter></Counter>
 </template>
 
