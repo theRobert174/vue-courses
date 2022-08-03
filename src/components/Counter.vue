@@ -1,8 +1,9 @@
 <template>
   <h2>{{customTitle}}</h2>
   <p>{{counter}}<sup>2</sup> = {{squareCounter}}</p>
+  <p data-testid="counter">{{counter}}</p>
 
-  <div>
+  <div class="test">
     <button @click="increase">+1</button>
     <button @click="decrease">-1</button>
   </div>
@@ -16,11 +17,10 @@ export default {
             type: Number,
             default: 100,
             validator(value){
-                return value > 100
+                return value >= 0
             }
         }
     },
-    //name: Counter,
     data(){
         return{
             counter: this.start
@@ -40,7 +40,6 @@ export default {
     },
     computed: {
         squareCounter(){
-            console.log('func in computed')
             return this.counter * this.counter
         },
         customTitle(){
