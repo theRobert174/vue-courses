@@ -30,6 +30,7 @@ export default {
         question(value, oldValue){
             // console.log({value, oldValue})
             this.isValidQuestion = false
+            console.log({value})
             if(!this.question.endsWith('?')) return
             this.isValidQuestion = true
             this.getAnswer()
@@ -37,11 +38,17 @@ export default {
     },
     methods: {
         async getAnswer(){
-            this.answer = 'Pensando ...'
-            const {answer, image} = await fetch('https://yesno.wtf/api').then(r => r.json())
-            // console.log(answer)
-            this.answer = answer
-            this.img = image
+            try {
+                this.answer = 'Pensando ...'
+                const {answer, image} = await fetch('https://yesno.wtf/api').then(r => r.json())
+                // console.log(answer)
+                this.answer = answer
+                this.img = image
+            } catch (error) {
+                console.log('Indecision Component:', error)
+                this.answer = 'No se pudo cargar del API'
+                this.img = null
+            }
         }
     }
 }
