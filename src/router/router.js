@@ -36,6 +36,27 @@ const routes = [
         ]
     },
     {
+        path: '/dbz',
+        name: 'dbz',
+        component: () => import(/* webpackChunkName: "LZDragonBallLayout" */ '@/modules/dbz/layouts/DragonBallLayout'),
+        children: [
+            {
+                path: 'characters',
+                name: 'dbz-characters', 
+                component: () => import(/* webpackChunkName: "LZcharacters" */ '../modules/dbz/pages/Characters')
+            },
+            {
+                path: 'about', 
+                name: 'dbz-about',
+                component: () => import(/* webpackChunkName: "LZLAboutPage" */ '../modules/dbz/pages/About')
+            },
+            {
+                path: '',
+                redirect: { name: 'dbz-about' }
+            }
+        ]
+    },
+    {
         path: '/:pathMath(.*)*', 
         component: () => import(/* webpackChunkName: "LZNoPage" */ '../modules/shared/pages/NoPageFound')
     },
