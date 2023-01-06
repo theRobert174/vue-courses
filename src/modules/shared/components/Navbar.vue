@@ -1,10 +1,30 @@
 <template>
     <div>
-        <router-link to="/">Pokemon List</router-link>
+        <!-- <router-link :to="{ name: 'home' }">Pokemon List</router-link>
         <router-link :to="{ name: 'pokemon-id', params: {id: 85}}">Pokemon por ID</router-link>
-        <router-link to="/about">About</router-link>
+        <router-link :to="{ name: 'about' }">About</router-link> -->
+        <CustonLink v-for="link in links" :key="link.to" :link="link" />
     </div>
 </template>
+
+<script>
+import { defineAsyncComponent } from 'vue'
+export default {
+    data() {
+        return {
+            links: [
+                { to: '/home', name: 'Pokemons'},
+                { to: '/pokemonid/50', name: 'Por ID'},
+                { to: '/about', name: 'About'},
+                { to: 'https://google.com', name: 'Google'},
+                ]
+        }
+    },
+    components: {
+        CustonLink: defineAsyncComponent(() => import('./CustomLink.vue'))
+    }
+}
+</script>
 
 <style scoped>
 
@@ -18,7 +38,7 @@ div a{
     margin: 0 10px;
 }
 
-div .router-link-exact-active{
+/* a .router-link-exact-active{
     color: #42b983
-}
+} */
 </style>
