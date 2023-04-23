@@ -13,27 +13,32 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+    component: () => import(/* webpackChunkName: "AboutView" */ '../views/AboutView.vue')
   },
   {
     path: '/counter',
     name: 'counter',
-    component: () => import(/* webpackChunkName: "about" */ '../views/CounterView.vue')
+    component: () => import(/* webpackChunkName: "CounterView" */ '../views/CounterView.vue')
   },
   {
     path: '/users',
     name: 'users',
-    component: () => import(/* webpackChunkName: "about" */ '../views/UsersView.vue')
+    component: () => import(/* webpackChunkName: "UsersView" */ '../views/UsersView.vue')
   },
   {
     path: '/pokemon-search',
     name: 'pokemon-search',
-    component: () => import(/* webpackChunkName: "about" */ '../views/SearchPokemonView.vue')
+    component: () => import(/* webpackChunkName: "SearchPokemonView" */ '../views/SearchPokemonView.vue')
   },
   {
     path: '/pokemon/:id',
     name: 'pokemon-id',
-    component: () => import(/* webpackChunkName: "about" */ '../views/PokemonView.vue')
+    component: () => import(/* webpackChunkName: "PokemonView" */ '../views/PokemonView.vue')
+  },
+  {
+    path: '/todo',
+    name: 'todo',
+    component: () => import(/* webpackChunkName: "TodoVuexView" */ '../views/TodoVuexView.vue')
   }
 ]
 
