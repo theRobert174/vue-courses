@@ -11,13 +11,31 @@
             <li v-for="todo in getTodosByTab" :key="todo.id" :class="{'completed' : todo.completed}" @dblclick="toggleTodo(todo.id)">{{ todo.text }}</li>
         </ul>
     </div>
+
+    <button @click="isOpen = true">Crear todo</button>
+    <modal v-if="isOpen" @on:close="isOpen = false">
+        <template v-slot:header>
+            <h1>Nueva Tarea</h1>
+        </template>
+        <template v-slot:body>
+            <form @submit.prevent="createTodo(newTodoText); isOpen = false">
+                <input type="text" placeholder="Nueva tarea" v-model="newTodoText">
+            </form>
+            <br>
+            <br>
+            <button type="submit" @click.prevent="createTodo(newTodoText); isOpen = false">Crear</button>
+        </template>
+    </modal>
 </template>
 
 <script>
 /*import { ref, computed } from 'vue'
 import { useStore } from 'vuex'*/
-import  useTodos  from "../composables/useTodos";
+import  useTodos  from "../composables/useTodos"
+import Modal from "@/components/ModalComponent.vue"
+import { ref } from 'vue'
 export default {
+    components: {Modal},
     setup(){
         /*const store = useStore()
 
@@ -33,9 +51,11 @@ export default {
 
             toggleTodo: (id) => store.commit('toggleTodo', id)
         }*/
-        const { pending, currentTab, getTodosByTab, toggleTodo} = useTodos()
+        const { pending, currentTab, getTodosByTab, toggleTodo, createTodo} = useTodos()
         return {
-            pending, currentTab, getTodosByTab, toggleTodo
+            pending, currentTab, getTodosByTab, toggleTodo, createTodo,
+            isOpen: ref(false),
+            newTodoText: ref('')
         }
     }
 }

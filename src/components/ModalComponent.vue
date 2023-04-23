@@ -2,9 +2,9 @@
     <div class="modal-background fade-in" @click.self="$emit('on:close')">
         <div class="modal-container">
             <slot name="header"/>
-            <hr>
+            <!-- <hr> -->
             <slot name="body"/>
-            <hr>
+            <!-- <hr> -->
             <slot name="footer"/>
             <slot name="exposed" :newTitle="newTitle"></slot>
             <!-- <slot/> -->
