@@ -12,7 +12,7 @@
     </ul>
   </div>
 
-  <button @click="previousPage">Atras</button>
+  <button @click="previousPage">Atrás</button>
   <button @click="nextPage">Siguiente</button>
   <span>Pagina: {{currentPage}}</span>
 </template>
