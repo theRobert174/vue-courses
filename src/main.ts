@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 
 import mapboxgl from 'mapbox-gl';
+//mapboxgl.accessToken = 'MAPBOX_TOKEN_REMOVED';
 mapboxgl.accessToken = 'MAPBOX_TOKEN_REMOVED';
 
 if(!navigator.geolocation){
