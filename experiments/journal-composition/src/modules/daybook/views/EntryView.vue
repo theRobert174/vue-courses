@@ -1,0 +1,199 @@
+<template>
+    <template v-if="entry">
+        <div class="entry-wrapper d-flex flex-column">
+            <div class="entry-title d-flex flex-wrap justify-content-between align-items-center p-2 gap-2">
+                <div>
+                    <span class="text-success fs-3 fw-bold">{{ day }}</span>
+                    <span class="mx-1 fs-3">{{month}}</span>
+                    <span class="mx-2 fs-4 fw-light">{{yearDay}}</span>
+                </div>
+
+                <div>
+                    <input type="file" name="" id="box" @change="onSelectedImage" ref="imageSelector" v-show="false" accept="image/png, image/jpeg, image/jpg">
+                    <button v-if="entry.id" class="btn btn-danger mx-2" @click="onDeleteEntry">Borrar <i class="fa fa-trash-alt"></i></button>
+                    <button class="btn btn-primary" @click="onSelectImage">Subir foto <i class="fa fa-upload"></i></button>
+                </div>
+            </div>
+            <hr class="mt-0">
+            <div class="d-flex flex-column px-3 flex-grow-1">
+                <textarea placeholder="Que sucedió hoy?" v-model="entry.text"></textarea>
+            </div>
+        </div>
+        <img v-if="entry.picture && !localImage" :src="entry.picture" alt="entry-picture" class="img-thumbnail entry-picture">
+        <img v-if="localImage" :src="localImage" alt="entry-picture" class="img-thumbnail entry-picture">
+    </template>
+    <Fab :icon="'fa-floppy-disk'" @on:click="saveEntry"/>
+</template>
+
+<script>
+import { computed, defineAsyncComponent, onMounted, reactive, ref, watch } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+
+import Swal from 'sweetalert2'
+
+import uploadImage from '../helpers/uploadImage'
+import getDayMonthYear from '../helpers/getDayMonthYear'
+
+export default {
+    name: 'EntryView',
+    components:{ Fab: defineAsyncComponent( () => import('@/modules/daybook/components/FabComponent.vue')) },
+    props:{
+        id: {
+            type: String,
+            required: true
+        }
+    },
+    setup(props){
+        const store = useStore()
+        const router = useRouter()
+
+        const entry = reactive({})
+        const file = ref('')
+        const localImage = ref('')
+        const imageSelector = ref('')
+
+        const getEntryById = (id) => store.getters['journal/getEntryById'](id)
+
+        const day = computed(() => getDayMonthYear(entry.date).day)
+        const month = computed(() => getDayMonthYear(entry.date).month)
+        const yearDay = computed(() => getDayMonthYear(entry.date).yearDay)
+
+        const loadEntry = () => {
+            let entryData
+
+            Object.keys(entry).forEach(key => {
+                    delete entry[key]
+            })
+
+            if(props.id === 'new'){
+                entryData = {
+                    text: '',
+                    date: new Date().getTime()
+                }
+                for(let prop in entryData){
+                    entry[prop] = entryData[prop]
+                }
+            } else {
+                entryData = getEntryById(props.id)
+                if(!entryData) return router.push({name: 'no-entry'})
+
+                for(let prop in entryData){
+                    entry[prop] = entryData[prop]
+                }
+            }
+
+            localImage.value = null
+            file.value = null
+            if(imageSelector.value) imageSelector.value.value = ''
+        }
+
+        const saveEntry = async() => {
+            new Swal({
+                title: 'Espere por favor',
+                allowOutsideClick: false
+            })
+            Swal.showLoading()
+
+            const pictureData = await uploadImage(file.value)
+            if(pictureData) entry.picture = pictureData
+
+            if(entry.id){
+                store.dispatch('journal/updateEntry', entry)
+            } else {
+                const resp = await store.dispatch('journal/createEntry', entry)
+                if(resp) router.push({name: 'entry', params: {id: resp}})
+            }
+
+            file.value = null
+            localImage.value = null
+            if(imageSelector.value) imageSelector.value.value = ''
+            Swal.fire('Guardado','Entrada Registrada','success')
+        }
+
+        const onDeleteEntry = async() => {
+            const { isConfirmed } = await Swal.fire({
+                title: 'Estas seguro?',
+                text: 'Una vez borrado, no se puede recuperar',
+                showDenyButton: true,
+                confirmButtonText: 'Si, estoy seguro'
+            })
+
+            if(isConfirmed){
+
+                new Swal({
+                    title:'Espere por favor',
+                    allowOutsideClick: false
+                })
+                Swal.showLoading()
+
+                const resp = await store.dispatch('journal/deleteEntry', entry.id)
+
+                if(resp) router.push({name: 'entry', params: {id: 'new'}})
+
+                Swal.fire('Eliminado','','success')
+            }
+        }
+
+        const onSelectedImage = (event) => {
+            const fileL = event.target.files[0]
+            if(!fileL){
+                localImage.value = null
+                file.value = null
+                return
+            }
+
+            file.value = fileL
+            const fr = new FileReader()
+            fr.onload = () => { localImage.value = fr.result}
+            fr.readAsDataURL(fileL)
+        }
+
+        const onSelectImage = () => {
+            imageSelector.value.click()
+        }
+
+        //watchers
+        watch(() => props.id, () => loadEntry())
+
+        //Life cycle hooks
+        onMounted(() => loadEntry())
+
+        return{
+            entry, localImage, 
+            onSelectedImage, onSelectImage, imageSelector, onDeleteEntry, saveEntry, loadEntry,
+
+            day, month, yearDay
+        }
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+.entry-wrapper {
+    height: 100%;
+}
+
+textarea{
+    font-size: 20px;
+    border: none;
+    height: 100%;
+    min-height: 200px;
+    resize: none;
+    width: 100%;
+
+    &:focus{
+        outline: none;
+    }
+}
+
+.entry-picture{
+    position: fixed;
+    bottom: 116px;
+    right: 20px;
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    box-shadow: 0px 5px 10px rgba($color: #000000, $alpha: 0.2);
+}
+</style>
